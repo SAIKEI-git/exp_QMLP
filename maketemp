@@ -1,0 +1,25 @@
+COMPILER  = gcc
+CFLAGS    = -g -MMD -MP -Wall
+LDFLAGS =
+LIBS      =
+INCLUDE   = -I./include
+TARGET    = ./bin/qmlp_train
+#$(shell basename `readlink -f .`)
+SRCDIR    = ./source
+SOURCES   = $(wildcard $(SRCDIR)/*.c)
+OBJDIR    = ./obj
+OBJECTS   = $(addprefix $(OBJDIR)/, $(notdir $(SOURCES:.c=.o)))
+DEPENDS   = $(OBJECTS:.o=.d)
+
+$(TARGET): $(OBJECTS) $(LIBS)
+	$(COMPILER) -o $@ $^ $(LDFLAGS)
+
+$(OBJDIR)/%.o: $(SRCDIR)/%.c
+	$(COMPILER) $(CFLAGS) $(INCLUDE) -o $@ -c $<
+
+all: clean $(TARGET)
+
+clean:
+	-rm -f $(OBJECTS) $(DEPENDS) $(TARGET)
+
+-include $(DEPENDS)
